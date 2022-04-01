@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Confetti from 'react-confetti';
-import Die from './Die';
-import './App.css';
-import './style.css';
+import Die from './components/Die';
+import './/style.css';
 import {nanoid} from "nanoid"
 export default function App() {
 
-  const [dice, setDice] = React.useState(allNewDice())
-  const [tenzies, setTenzies] = React.useState(false)
+  const [dice, setDice] = useState(allNewDice())
+  const [tenzies, setTenzies] = useState(false);
+  const [rollCount, setRollCount] = useState(1);
   
-  React.useEffect(() => {
+  useEffect(() => {
       const allHeld = dice.every(die => die.isHeld)
       const firstValue = dice[0].value
       const allSameValue = dice.every(die => die.value === firstValue)
@@ -36,15 +36,17 @@ export default function App() {
   
   function rollDice() {
       if(!tenzies) {
-          setDice(oldDice => oldDice.map(die => {
-              return die.isHeld ? 
-                  die :
-                  generateNewDie()
-          }))
+        setDice(oldDice => oldDice.map(die => {
+          return die.isHeld ? 
+          die :
+          generateNewDie()
+        }))
       } else {
-          setTenzies(false)
-          setDice(allNewDice())
+        setTenzies(false)
+        setDice(allNewDice())
+        setRollCount(0)
       }
+      setRollCount(prevCount => prevCount+1);
   }
   
   function holdDice(id) {
@@ -64,9 +66,15 @@ export default function App() {
       />
   ))
   
+
+
+
+  
+  
   return (
-      <main>
+      <main className="container">
           {tenzies && <Confetti />}
+          
           <h1 className="title">Tenzies</h1>
           <p className="instructions">Roll until all dice are the same. 
           Click each die to freeze it at its current value between rolls.</p>
@@ -75,10 +83,14 @@ export default function App() {
           </div>
           <button 
               className="roll-dice" 
-              onClick={rollDice}
+              onClick={() => {rollDice()}}
           >
-              {tenzies ? "New Game" : "Roll"}
+              {tenzies ? "New Game" : `Roll`}
           </button>
+          <div className="dice-rollcount">
+            <h3 className="dice-rollcount-number">{rollCount}</h3>
+          </div>
+
       </main>
   )
 }
